@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ART ZONE | Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--primary:#1e3c72;
+--secondary:#2a5298;
+--accent:#ffcc00;
+--glass:rgba(255,255,255,.15);
+--blur:blur(15px);
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins}
+body{background:linear-gradient(135deg,#1e3c72,#2a5298);min-height:100vh;color:#fff;}
+
+/* NAV */
+nav{background:rgba(255,255,255,.15);backdrop-filter:var(--blur);padding:15px 8%;display:flex;justify-content:space-between;align-items:center;color:#fff;}
+nav a{margin-left:25px;cursor:pointer;font-weight:500;}
+nav a:hover{color:var(--accent)}
+
+/* HERO */
+.hero{padding:120px 8%;color:#fff;}
+.hero h1{font-size:48px}
+.hero button{margin-top:30px;padding:14px 38px;background:var(--accent);border:none;border-radius:40px;cursor:pointer;}
+
+/* SECTION */
+section{padding:80px 8%}
+.title{text-align:center;margin-bottom:40px;color:#fff}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:30px;}
+.card{background:var(--glass);backdrop-filter:var(--blur);border-radius:25px;padding:35px;text-align:center;color:#fff;cursor:pointer;transition:.3s;}
+.card:hover{transform:translateY(-6px);}
+
+/* FORM */
+.form-box{max-width:480px;margin:auto;background:var(--glass);backdrop-filter:var(--blur);padding:40px;border-radius:25px;color:#fff;}
+input,textarea{width:100%;padding:14px;margin:10px 0;border:none;border-radius:12px;outline:none;}
+button{width:100%;padding:14px;border:none;border-radius:30px;background:var(--accent);cursor:pointer;font-weight:600;}
+
+/* ADMIN PANEL */
+#adminLogin,#adminPanel,#creativeArtPanel{display:none}
+.admin-layout{display:flex;min-height:100vh}
+.sidebar{width:260px;background:rgba(0,0,0,.4);color:#fff;padding:30px;}
+.sidebar button{width:100%;margin:10px 0;padding:14px;border:none;border-radius:12px;cursor:pointer;}
+.sidebar button:hover{background:var(--accent);color:#000;}
+.admin-main{flex:1;padding:40px;background:#f4f7fc;color:#000;}
+
+/* DASHBOARD */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:30px;}
+.stat{background:#fff;border-radius:20px;padding:30px;}
+.stat p{font-size:30px;font-weight:700}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:15px;overflow:hidden;margin-top:20px;color:#000;}
+th,td{padding:12px;text-align:center;}
+th{background:var(--primary);color:#fff;}
+td button{background:#e74c3c;color:#fff;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;}
+.form-box button{width:auto;}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+<h2>ART ZONE</h2>
+<div>
+<a onclick="showHome()">Home</a>
+<a onclick="scrollAdmission()">Admission</a>
+<a onclick="showAdminLogin()">Admin</a>
+</div>
+</nav>
+
+<!-- HOME -->
+<div id="home">
+<div class="hero">
+<h1>Premium Coaching for Academic Excellence</h1>
+<p>Classes 1–12 • Art • Science • Mathematics</p>
+<button onclick="scrollAdmission()">Apply Now</button>
+</div>
+
+<section>
+<div class="title"><h2>Our Programs</h2></div>
+<div class="grid">
+<div class="card" onclick="showCreativeArtPublic()">🎨 Creative Art</div>
+<div class="card">📘 Academic Excellence</div>
+<div class="card">🏆 Exam Preparation</div>
+</div>
+</section>
+
+<section id="admission">
+<div class="title"><h2>Online Admission</h2></div>
+<div class="form-box">
+<input id="studentName" placeholder="Student Name">
+<input id="studentClass" placeholder="Class">
+<input id="studentMobile" placeholder="Mobile Number">
+<textarea id="studentMessage" placeholder="Message"></textarea>
+<button onclick="saveAdmission()">Submit</button>
+</div>
+</section>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="adminLogin">
+<div class="form-box">
+<h2>Admin Login</h2>
+<input id="adminUser" placeholder="Username">
+<input id="adminPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+<div class="admin-layout">
+<div class="sidebar">
+<h3>ADMIN PANEL</h3>
+<button onclick="showSection('dashboard')">Dashboard</button>
+<button onclick="showSection('admissions')">Admissions</button>
+<button onclick="showSection('syllabus')">Syllabus</button>
+<button onclick="showSection('artCourses')">Creative Art Courses</button>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="admin-main">
+<section id="dashboard">
+<h2>Dashboard</h2>
+<div class="stats">
+<div class="stat"><h3>Total Admissions</h3><p id="totalAdmissions">0</p></div>
+<div class="stat"><h3>Total Syllabus</h3><p id="totalSyllabus">0</p></div>
+</div>
+</section>
+
+<section id="admissions" style="display:none">
+<h2>Admission Requests</h2>
+<table>
+<thead>
+<tr><th>Name</th><th>Class</th><th>Mobile</th><th>Message</th><th>Action</th></tr>
+</thead>
+<tbody id="admissionData"></tbody>
+</table>
+</section>
+
+<section id="syllabus" style="display:none">
+<h2>Syllabus Manager</h2>
+<input id="syClass" placeholder="Class">
+<textarea id="syText" placeholder="Syllabus"></textarea>
+<button onclick="saveSyllabus()">Save</button>
+<table>
+<thead><tr><th>Class</th><th>Syllabus</th><th>Action</th></tr></thead>
+<tbody id="syllabusData"></tbody>
+</table>
+</section>
+
+<!-- Creative Art Courses inside Admin Panel -->
+<section id="artCourses" style="display:none">
+<h2>Creative Art Courses</h2>
+
+<div class="form-box">
+<input id="adminCourseName" placeholder="Course Name">
+<textarea id="adminCourseDesc" placeholder="Course Description"></textarea>
+<input type="text" id="adminCourseDuration" placeholder="Duration (e.g., 2 hours, 3 days)">
+<button onclick="saveAdminCourse()">Add / Update Course</button>
+</div>
+
+<table>
+<thead>
+<tr><th>Course Name</th><th>Description</th><th>Duration</th><th>Action</th></tr>
+</thead>
+<tbody id="adminCourseData"></tbody>
+</table>
+</section>
+
+</div>
+</div>
+</div>
+
+<!-- Public Creative Art Panel -->
+<div id="creativeArtPanel" style="display:none">
+<div class="admin-layout">
+<div class="sidebar">
+<h3>CREATIVE ART</h3>
+<button onclick="backToHomeFromArt()">Back to Home</button>
+</div>
+
+<div class="admin-main">
+<div class="title"><h2>Art Courses</h2></div>
+
+<table>
+<thead>
+<tr><th>Course Name</th><th>Description</th><th>Duration</th></tr>
+</thead>
+<tbody id="publicCourseData"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<script>
+let isAdminLoggedIn=false;
+
+function showHome(){home.style.display="block";adminLogin.style.display="none";adminPanel.style.display="none";creativeArtPanel.style.display="none";}
+function showAdminLogin(){home.style.display="none";adminLogin.style.display="block";adminPanel.style.display="none";creativeArtPanel.style.display="none";}
+function scrollAdmission(){showHome();setTimeout(()=>admission.scrollIntoView({behavior:"smooth"}),100);}
+function showSection(id){if(!isAdminLoggedIn)return;document.querySelectorAll(".admin-main section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";}
+
+// Admin login
+function login(){
+  if(adminUser.value==="admin" && adminPass.value==="Tahir25"){
+    isAdminLoggedIn=true;
+    adminUser.value=adminPass.value="";
+    adminLogin.style.display="none";
+    adminPanel.style.display="block";
+    showSection("dashboard");
+    loadAdmissions();
+    loadSyllabus();
+    loadAdminCourses();
+  } else alert("Invalid Login");
+}
+function logout(){isAdminLoggedIn=false;showHome();}
+
+// Admissions
+function saveAdmission(){
+  if(!studentName.value||!studentClass.value||!studentMobile.value){alert("Fill all fields");return;}
+  let d=JSON.parse(localStorage.getItem("admissions"))||[];
+  d.push({name:studentName.value,cls:studentClass.value,mobile:studentMobile.value,message:studentMessage.value});
+  localStorage.setItem("admissions",JSON.stringify(d));
+  studentName.value=studentClass.value=studentMobile.value=studentMessage.value="";
+  alert("Submitted Successfully");
+  loadAdmissions();
+}
+function loadAdmissions(){
+  let d=JSON.parse(localStorage.getItem("admissions"))||[];
+  totalAdmissions.innerText=d.length;
+  admissionData.innerHTML="";
+  d.forEach((r,i)=>{admissionData.innerHTML+=`<tr><td>${r.name}</td><td>${r.cls}</td><td>${r.mobile}</td><td>${r.message}</td><td><button onclick="removeAdmission(${i})">Delete</button></td></tr>`;});
+}
+function removeAdmission(i){
+  let d=JSON.parse(localStorage.getItem("admissions"));
+  d.splice(i,1);
+  localStorage.setItem("admissions",JSON.stringify(d));
+  loadAdmissions();
+}
+
+// Syllabus
+function saveSyllabus(){
+  if(!syClass.value||!syText.value){alert("Enter data");return;}
+  let s=JSON.parse(localStorage.getItem("syllabus"))||{};
+  s[syClass.value]=syText.value;
+  localStorage.setItem("syllabus",JSON.stringify(s));
+  syClass.value=syText.value="";
+  loadSyllabus();
+}
+function loadSyllabus(){
+  let s=JSON.parse(localStorage.getItem("syllabus"))||{};
+  syllabusData.innerHTML="";
+  let c=0;
+  for(let k in s){c++;syllabusData.innerHTML+=`<tr><td>${k}</td><td>${s[k]}</td><td><button onclick="deleteSyllabus('${k}')">Delete</button></td></tr>`;}
+  totalSyllabus.innerText=c;
+}
+function deleteSyllabus(k){
+  let s=JSON.parse(localStorage.getItem("syllabus"));
+  delete s[k];
+  localStorage.setItem("syllabus",JSON.stringify(s));
+  loadSyllabus();
+}
+
+// Creative Art Courses (Admin Panel)
+function saveAdminCourse(){
+  const name = adminCourseName.value.trim();
+  const desc = adminCourseDesc.value.trim();
+  const duration = adminCourseDuration.value.trim();
+  if(!name || !desc || !duration){alert("Enter course name, description, and duration"); return;}
+  let courses = JSON.parse(localStorage.getItem("artCourses"))||{};
+  courses[name]={desc,duration};
+  localStorage.setItem("artCourses",JSON.stringify(courses));
+  adminCourseName.value=adminCourseDesc.value=adminCourseDuration.value="";
+  loadAdminCourses();
+}
+function loadAdminCourses(){
+  let courses = JSON.parse(localStorage.getItem("artCourses"))||{};
+  adminCourseData.innerHTML="";
+  for(let k in courses){
+    adminCourseData.innerHTML+=`<tr><td>${k}</td><td>${courses[k].desc}</td><td>${courses[k].duration}</td><td><button onclick="deleteAdminCourse('${k}')">Delete</button></td></tr>`;
+  }
+}
+function deleteAdminCourse(name){
+  let courses = JSON.parse(localStorage.getItem("artCourses"))||{};
+  delete courses[name];
+  localStorage.setItem("artCourses",JSON.stringify(courses));
+  loadAdminCourses();
+}
+
+// Public Creative Art Panel
+function showCreativeArtPublic(){
+  home.style.display="none";adminLogin.style.display="none";adminPanel.style.display="none";creativeArtPanel.style.display="block";
+  loadPublicCourses();
+}
+function backToHomeFromArt(){showHome();}
+function loadPublicCourses(){
+  let courses = JSON.parse(localStorage.getItem("artCourses"))||{};
+  publicCourseData.innerHTML="";
+  for(let k in courses){
+    publicCourseData.innerHTML+=`<tr><td>${k}</td><td>${courses[k].desc}</td><td>${courses[k].duration}</td></tr>`;
+  }
+}
+
+window.onload=showHome;
+</script>
+
+</body>
+</html>
